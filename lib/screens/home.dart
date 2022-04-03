@@ -1,8 +1,9 @@
 import 'dart:ui';
 import 'package:box3/screens/FullPicture.dart';
 import 'package:box3/screens/box.dart';
+import 'package:box3/screens/dev.dart';
+import 'package:box3/screens/home2.dart';
 import 'package:box3/screens/signin.dart';
-import 'package:box3/screens/check.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:googleapis/cloudasset/v1.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:path/path.dart' as path;
 import 'dart:async';
+import 'package:box3/screens/dev.dart';
 
 class MyHomePage extends StatefulWidget {
   final FirebaseUser user;
@@ -69,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.share),
               color: Colors.white,
               onPressed: () {
+                //_share();
                 shareBOX();
               }),
         ],
@@ -88,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
+  
   Drawer showDrawer() => Drawer(
         child: ListView(
           children: <Widget>[
@@ -111,6 +114,14 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
+              leading: Icon(Icons.family_restroom),
+              title: Text('กล่องของเพื่อน'),
+              onTap: () {
+                Navigator.pop(context);
+                checkAuth3(context);
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.search),
               title: Text('ค้นหา'),
               onTap: () {
@@ -127,6 +138,14 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
+              leading: Icon(Icons.logo_dev),
+              title: Text('ผู้พัฒนาแอปพลิเคชัน'),
+              onTap: () {
+                Navigator.pop(context);
+                dev(context);
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.exit_to_app),
               title: Text('ออกจากระบบ'),
               onTap: () {
@@ -136,6 +155,39 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       );
+
+  Future dev(BuildContext context) async {
+    //FirebaseUser user = await _auth.currentUser();
+    // if (user != null) {
+    //   print("sign-in with google acount");
+    //   print('มีหลายกล่อง');
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => MyLoginPage()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Mydev()));
+    // } else if (user == null) {
+    //   print("sign-out with google acount");
+    //   // Navigator.pushReplacement(
+    //   //     context, MaterialPageRoute(builder: (context) => MyLoginPage()));
+    // }
+  }
+
+
+  Future checkAuth3(BuildContext context) async {
+    FirebaseUser user = await _auth.currentUser();
+    if (user != null) {
+      print("sign-in with google acount");
+      print('มีหลายกล่อง');
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => MyLoginPage()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MyHomePage2(user)));
+    } else if (user == null) {
+      print("sign-out with google acount");
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => MyLoginPage()));
+    }
+  }
 
   Future checkAuth2(BuildContext context) async {
     FirebaseUser user = await _auth.currentUser();
@@ -476,7 +528,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             new Expanded(
               child: new TextField(
-                onChanged: (value) => shareName = value,
+                onChanged: (value) => newName = value,
                 autofocus: true,
                 decoration:
                     new InputDecoration(labelText: 'ชื่อกล่อง', hintText: ''),
@@ -502,6 +554,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  final myController = TextEditingController();
   shareBOX() async {
     await showDialog<String>(
       context: context,
@@ -511,6 +564,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             new Expanded(
               child: new TextField(
+                controller: myController,
                 onChanged: (value) => shareName = value,
                 autofocus: true,
                 decoration: new InputDecoration(
@@ -681,12 +735,47 @@ class _MyHomePageState extends State<MyHomePage> {
 
     driveFile.role = 'writer';
     driveFile.type = 'user';
-    driveFile.emailAddress = '$shareName';
-    print('ดักดู   ${driveFile.emailAddress}');
+    driveFile.emailAddress = myController.text.toString(); //'$shareName';
+    print('ดักดู   ${driveFile.emailAddress}+' +
+        myController.text.toString() +
+        boxID);
     // driveFile.kind = 'drive#permission';
     // driveFile.id = '06163652592434522150';
-    final result = await driveApi.permissions.create(driveFile, '$boxID');
+    final result =
+        await driveApi.permissions.create(driveFile, boxID.toString());
     print(result);
-    print('Share folder to $shareName');
+    print('Share folder to $shareName +' + myController.text.toString());
+    _share();
+  }
+
+  _share() async {
+    await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          "แชร์สำเร็จ🎉",
+          style: new TextStyle(
+            color: Color.fromARGB(255, 10, 111, 200),
+          ),
+        ),
+        content: Text(
+          "คุณได้แชร์ข้อมูลให้กับ " + myController.text.toString(),
+          style: new TextStyle(
+            color: Color.fromARGB(255, 10, 111, 200),
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: Text(
+              "รับทราบ",
+              style: new TextStyle(color: Color.fromARGB(255, 10, 111, 200)),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

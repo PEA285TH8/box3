@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:box3/screens/FullPicture.dart';
 import 'package:box3/screens/box.dart';
 import 'package:box3/screens/signin.dart';
-import 'package:box3/screens/check.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +47,6 @@ class _MyHomePage3State extends State<MyHomePage3> {
       shareName;
   String get newPath => _showDialog();
   String get newPath2 => search();
-  //String get newPath3 => picturename();
   String get newPath4 => shareBOX();
 
   @override
@@ -69,25 +67,14 @@ class _MyHomePage3State extends State<MyHomePage3> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("$nameBox", style: TextStyle(color: Colors.white)),
+        title: Text("$nameBox" + '(ของเพื่อน)',
+            style: TextStyle(color: Colors.white)),
         actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.refresh),
-              color: Colors.white,
-              onPressed: () {
-                listboxID(boxID);
-              }),
           IconButton(
               icon: Icon(Icons.search),
               color: Colors.white,
               onPressed: () {
                 search();
-              }),
-          IconButton(
-              icon: Icon(Icons.share),
-              color: Colors.white,
-              onPressed: () {
-                shareBOX();
               }),
         ],
       ),
@@ -227,7 +214,7 @@ class _MyHomePage3State extends State<MyHomePage3> {
                     Container(
                       child: ListTile(
                         leading: leadingIcon,
-                        title: Text(list.files[i].name),
+                        title: Text(list.files[i].name + '(ของเพื่อน)'),
                         onTap: () {
                           setState(() {
                             folderID = list.files[i].id;
@@ -574,14 +561,7 @@ class _MyHomePage3State extends State<MyHomePage3> {
     driveFile.type = 'user';
     driveFile.emailAddress = name;
     print('ดักดู   ${driveFile.emailAddress}');
-    // driveFile.kind = 'drive#permission';
-    // driveFile.id = '06163652592434522150';
     await driveApi.permissions.create(driveFile, '$boxID');
-    //driveApi.permissions.create('$shareName', '$boxID')
     print('Share folder to $shareName');
   }
 }
-   //driveFile.emailAddress = 'peath8285@gmail.com';
-    //shareName = 'yourEmail@mail.com';
-    // driveFile.emailAddress = shareName.toString();
-    // print(shareName.toString());

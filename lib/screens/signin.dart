@@ -1,9 +1,9 @@
-import 'package:box3/screens/check.dart';
 import 'package:box3/screens/home.dart';
 import 'package:box3/screens/home2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/drive/v3.dart' as drive;
 
 class MyLoginPage extends StatefulWidget {
   MyLoginPage({Key key}) : super(key: key);
@@ -75,10 +75,9 @@ class _MyLoginPageState extends State<MyLoginPage> {
     if (user != null) {
       print("signin with google acount");
 
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Mycheck(user)));
-    }
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MyHomePage(user)));
+    } //Replacement
   }
 
   Widget buildButtonGoogle(BuildContext context) {
@@ -100,6 +99,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
       scopes: [
         'https://www.googleapis.com/auth/contacts.readonly',
       ],
+      //scopes: [drive.DriveApi.driveFileScope],
     );
     GoogleSignInAccount user = await _googleSignIn.signIn();
     GoogleSignInAuthentication userAuth = await user.authentication;

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.box3">
    <application
-        android:label="box3"
+        android:label="What is in the BOX"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
